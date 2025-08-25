@@ -4,9 +4,11 @@ package com.SpringSecurity.demoSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class Config {
     @Autowired
     private UserDetailsService userDetailsService;
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -38,7 +41,11 @@ public class Config {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(customizer -> customizer.disable());
-        http.authorizeHttpRequests(requst -> requst.anyRequest().authenticated());
+        http.authorizeHttpRequests(requst -> requst
+                .requestMatchers("register", "login")
+                .permitAll()
+                .anyRequest()
+                .authenticated());
 //        http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -46,6 +53,9 @@ public class Config {
         return http.build();
     }
 
-
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
 }
