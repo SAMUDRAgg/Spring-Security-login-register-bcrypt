@@ -44,12 +44,23 @@ public class Config {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(customizer -> customizer.disable());
-        http.authorizeHttpRequests(requst -> requst.requestMatchers("register", "login").permitAll().anyRequest().authenticated());
-//        http.formLogin(Customizer.withDefaults());
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/register", "/login").permitAll()  // allow public
+                .anyRequest().authenticated()                       // protect others
+        );
+
         http.httpBasic(Customizer.withDefaults());
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // optional: if you want OAuth2 login too
+        http.oauth2Login(Customizer.withDefaults());
 
         return http.build();
     }
