@@ -1,7 +1,9 @@
 package com.SpringSecurity.demoSecurity.Controller;
 
 import com.SpringSecurity.demoSecurity.DAO.Students;
+import com.SpringSecurity.demoSecurity.Service.StudentService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,20 +15,20 @@ import java.util.List;
 
 @RestController
 public class StudentController {
+    @Autowired
+    private StudentService studentService;
 
-    List<Students> students = new ArrayList<>(List.of(
-            new Students(1, "samudra", "java"),
-            new Students(2, "nante", "javascript")
-    ));
+
 
     @GetMapping("Students")
-    List<Students> getAllStudents() {
-        return students;
+    public List<Students> getAllStudents() {
+        return studentService.getStudent();
     }
 
     @PostMapping("addStudents")
     public void addStudents(@RequestBody Students st) {
-        students.add(st);
+        studentService.addStudents(st);
+
     }
 
     @GetMapping("csrf")

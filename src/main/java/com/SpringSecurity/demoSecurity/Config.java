@@ -44,7 +44,7 @@ public class Config {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(csrf -> csrf.disable()); // Disableing the CSRF
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers("/register", "/login").permitAll()  // allow public
